@@ -1,0 +1,62 @@
+Application Space Error
+
+1. Delete old TNS/Oracle Logs;
+http://helpdesk/AddSolution.do?submitaction=viewsolution&fromListView=true&solutionID=18
+
+2.  Check alert_ris.log for 100% capacity.
+C:\app\diag\rdbms\ris\ris\trace\alert_ris.log
+If it shows,  "ORA-19815:  WARNING:  db_recovery_file_dest_size of XXX is 100.00% used" , Then check to see if backup is running properly.  
+DailyDBBackup.Bat is in C:\Program Files\Store\Application.   Run this from a command prompt.  If success, great.  If not, check log file.  If error of "TNS:listener does not currently".... then;
+from command prompt;  Enter Password xxxxxxx when prompted
+
+1.	Sqlplus sys as sysdba  
+2.	Startup mount
+3.	Host rman target sys
+4.	delete noprompt expired archivelog all;
+5.	delete archivelog until time 'SYSDATE-1/24';
+If at this point you see warning about mismatched status
+6. crosscheck backup;
+7. delete obsolete;
+
+otherwise;
+6. exit;
+
+reboot
+
+
+also this:
+
+Delete old TNS/Oracle logs
+
+C:\>adrci
+
+ADRCI: Release 11.2.0.3.0 - Production on Wed Apr 13 13:20:26 2016
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights
+ADR base = "c:\app"
+
+adrci> show homes
+ADR Homes:
+diag\clients\user_Localengr\host_2721327235_80
+diag\clients\user_serviceid\host_2721327235_80
+diag\clients\user_serviceid\host_2920571220_80
+diag\clients\user_SYSTEM\host_2721327235_80
+diag\clients\user_SYSTEM\host_2920571220_80
+diag\clients\user_transf01\host_2920571220_80
+diag\clients\user_UNKNOWN\host_2721327235_80
+diag\clients\user_UNKNOWN\host_2920571220_80
+diag\rdbms\ris\ris
+diag\\tnslsnr\7-1740FEBC176C4\ris
+diag\\tnslsnr\7-35478E5B61C84\ris
+diag\\tnslsnr\7-690140B162764\ris
+diag\\tnslsnr\7-691D4E82E87E4\ris
+diag\\tnslsnr\7-7C2E01DB753A4\ris
+diag\\tnslsnr\7-7DB8E21277CB4\ris
+diag\\tnslsnr\7-895099D69BFE4\ris
+diag\\tnslsnr\7-E573DA99434B4\ris
+diag\\tnslsnr\7-F36D244AB03C4\ris
+diag\\tnslsnr\S00012941\ris
+diag\\tnslsnr\T00006668\ris
+adrci> set home diag\clients\user_Administrator\host_2721327235_80
+adrci> purge -age 100
+
+Repeat for each "home" listed.
